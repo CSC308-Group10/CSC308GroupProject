@@ -20,8 +20,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
-    
 }
 
 extension ViewController: UITableViewDelegate {
@@ -30,7 +28,7 @@ extension ViewController: UITableViewDelegate {
         switch(indexPath.row) {
                 case 0:
                     // Play hit
-                    self.performSegue(withIdentifier: "playSegue", sender: self)
+                    self.performSegue(withIdentifier: "memberSegue", sender: self)
                     break
                 case 1:
                     // Themes hit
