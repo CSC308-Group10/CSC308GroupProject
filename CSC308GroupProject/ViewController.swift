@@ -11,11 +11,13 @@ class ViewController: UIViewController {
 
     let gameTable = ["Play", "Themes", "Player Customization"]
     let theme = ["Dark", "Light", "Pastel", "Dark Pastel"]
-    let names = ["Player 1", "Player 2"]
+    var names = ["Player 1", "Player 2"]
+    var colors = ["yellow", "red"]
     
     var selectedMember = ""
     var selectedTopic = ""
     var selectedImage = ""
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
