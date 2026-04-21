@@ -12,7 +12,15 @@ class PlayModeController: UIViewController {
     var mode = Mode.SP
     
     @IBAction func playButtonPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: "playSegue", sender: self)
+        switch mode {
+        case .SP:
+            self.performSegue(withIdentifier: "singleSegue", sender: self)
+            break
+        default:
+            self.performSegue(withIdentifier: "playSegue", sender: self)
+            break
+        }
+        
     }
     @IBOutlet weak var modeDescText: UITextView!
     
