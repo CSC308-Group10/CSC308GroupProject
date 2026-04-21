@@ -4,6 +4,7 @@
 //
 //  Created by Morgan, Greyson F. on 4/16/26.
 //  Edited by Schmidt, Alex on 4/20/26
+// Edited by Schmidt, Alex on 4/21/26
 
 import UIKit
 
@@ -13,11 +14,19 @@ class GameController: UIViewController {
     var mode: Mode = .TP
     var playerNames: [String] = ["Player 1", "Player 2"]
     var playerColors: [UIColor] = [.systemYellow, .systemRed]
+    var modeTitleLabel: UILabel!
+    // MARK: - IBOutlets
+
+    @IBOutlet weak var player1Label: UILabel!
+    @IBOutlet weak var player1ColorLabel: UILabel!
+
+    @IBOutlet weak var player2Label: UILabel!
+    @IBOutlet weak var player2ColorLabel: UILabel!
 
     // MARK: - Board constants
     let rows = 6
     let cols = 7
-    let cellSize: CGFloat = 46
+    let cellSize: CGFloat = 40
     let cellPadding: CGFloat = 5
 
     // MARK: - Game state
@@ -46,6 +55,8 @@ class GameController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.15, alpha: 1)
+
+        setupTopUI()
         setupUI()
     }
 
@@ -61,6 +72,59 @@ class GameController: UIViewController {
         turnTimer?.invalidate()
     }
 
+    // MARK: - Top UI
+
+    func setupTopUI() {
+
+        // Create title label
+        modeTitleLabel = UILabel()
+        modeTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        modeTitleLabel.textAlignment = .center
+        modeTitleLabel.font = UIFont.boldSystemFont(ofSize: 26)
+        modeTitleLabel.textColor = .white
+
+        // Only show in timed mode
+        if mode == .TPT {
+            modeTitleLabel.text = "⏱"
+        } else {
+            modeTitleLabel.text = "1v1"
+        }
+
+        view.addSubview(modeTitleLabel)
+
+        NSLayoutConstraint.activate([
+            modeTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            modeTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+
+        // Player buttons (already in storyboard)
+        // Player names
+        player1Label.text = playerNames[0]
+        player2Label.text = playerNames[1]
+
+        // Match text color to player color
+        player1Label.textColor = playerColors[0]
+        player2Label.textColor = playerColors[1]
+
+        // Show color text
+        player1ColorLabel.text = "Color"
+        player2ColorLabel.text = "Color"
+
+        // Make the color labels actually display the color
+        player1ColorLabel.backgroundColor = playerColors[0]
+        player2ColorLabel.backgroundColor = playerColors[1]
+
+        // Styling (optional but looks clean)
+        player1ColorLabel.layer.cornerRadius = 8
+        player2ColorLabel.layer.cornerRadius = 8
+
+        player1ColorLabel.clipsToBounds = true
+        player2ColorLabel.clipsToBounds = true
+
+        player1ColorLabel.textAlignment = .center
+        player2ColorLabel.textAlignment = .center
+    }
+
     // MARK: - UI Setup
 
     func setupUI() {
@@ -69,20 +133,22 @@ class GameController: UIViewController {
         setupBoard()
         setupColumnButtons()
         updateStatusLabel()
+        updateArrowColors()
+        setButtonsEnabled(true)
     }
 
     func setupStatusLabel() {
         statusLabel = UILabel()
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.textAlignment = .center
-        statusLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        statusLabel.font = UIFont.boldSystemFont(ofSize: 22)
         statusLabel.textColor = .white
         view.addSubview(statusLabel)
 
         NSLayoutConstraint.activate([
-            statusLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8)
+            statusLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 140),
+            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12)
         ])
     }
 
@@ -90,7 +156,7 @@ class GameController: UIViewController {
         timerLabel = UILabel()
         timerLabel.translatesAutoresizingMaskIntoConstraints = false
         timerLabel.textAlignment = .center
-        timerLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 28, weight: .bold)
+        timerLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 26, weight: .bold)
         timerLabel.textColor = .white
         timerLabel.isHidden = (mode != .TPT)
         view.addSubview(timerLabel)
@@ -110,12 +176,12 @@ class GameController: UIViewController {
         timerBarBG.addSubview(timerBar)
 
         NSLayoutConstraint.activate([
-            timerLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 8),
+            timerLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 28),
             timerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-            timerBarBG.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 6),
-            timerBarBG.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            timerBarBG.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            timerBarBG.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 12),
+            timerBarBG.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            timerBarBG.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
             timerBarBG.heightAnchor.constraint(equalToConstant: 10),
 
             timerBar.leadingAnchor.constraint(equalTo: timerBarBG.leadingAnchor),
@@ -123,16 +189,9 @@ class GameController: UIViewController {
             timerBar.bottomAnchor.constraint(equalTo: timerBarBG.bottomAnchor)
         ])
 
-        timerBarWidth = timerBar.widthAnchor.constraint(equalToConstant: 0)
+        timerContainerWidth = view.bounds.width - 64
+        timerBarWidth = timerBar.widthAnchor.constraint(equalToConstant: timerContainerWidth)
         timerBarWidth.isActive = true
-
-        DispatchQueue.main.async {
-            self.timerContainerWidth = timerBarBG.bounds.width
-            if self.timerContainerWidth == 0 {
-                self.timerContainerWidth = self.view.bounds.width - 48
-            }
-            self.timerBarWidth.constant = self.timerContainerWidth
-        }
     }
 
     func setupBoard() {
@@ -150,18 +209,20 @@ class GameController: UIViewController {
         boardContainer.clipsToBounds = false
         view.addSubview(boardContainer)
 
-        let topOffset: CGFloat = (mode == .TPT) ? 160 : 110
+        let boardTopConstant: CGFloat = 300
 
         NSLayoutConstraint.activate([
-            boardContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topOffset),
+            boardContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: boardTopConstant),
             boardContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             boardContainer.widthAnchor.constraint(equalToConstant: totalW),
             boardContainer.heightAnchor.constraint(equalToConstant: totalH)
         ])
 
         cellViews = []
+
         for row in 0..<rows {
             var rowViews: [UIView] = []
+
             for col in 0..<cols {
                 let x = cellPadding + CGFloat(col) * (cellSize + cellPadding)
                 let y = cellPadding + CGFloat(row) * (cellSize + cellPadding)
@@ -172,9 +233,11 @@ class GameController: UIViewController {
                 circle.clipsToBounds = true
                 circle.layer.borderColor = UIColor(white: 0.0, alpha: 0.5).cgColor
                 circle.layer.borderWidth = 2
+
                 boardContainer.addSubview(circle)
                 rowViews.append(circle)
             }
+
             cellViews.append(rowViews)
         }
     }
@@ -190,7 +253,7 @@ class GameController: UIViewController {
         view.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.bottomAnchor.constraint(equalTo: boardContainer.topAnchor, constant: -6),
+            stack.bottomAnchor.constraint(equalTo: boardContainer.topAnchor, constant: -8),
             stack.centerXAnchor.constraint(equalTo: boardContainer.centerXAnchor),
             stack.widthAnchor.constraint(equalToConstant: totalW),
             stack.heightAnchor.constraint(equalToConstant: cellSize)
@@ -216,7 +279,7 @@ class GameController: UIViewController {
         view.addSubview(quitBtn)
 
         NSLayoutConstraint.activate([
-            quitBtn.topAnchor.constraint(equalTo: boardContainer.bottomAnchor, constant: 20),
+            quitBtn.topAnchor.constraint(equalTo: boardContainer.bottomAnchor, constant: 48),
             quitBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -227,21 +290,23 @@ class GameController: UIViewController {
         turnTimer?.invalidate()
         timeRemaining = turnTimeLimit
 
-        timerBarWidth.constant = timerContainerWidth > 0 ? timerContainerWidth : (view.bounds.width - 48)
+        timerBarWidth.constant = timerContainerWidth
         view.layoutIfNeeded()
 
         updateTimerLabel()
         updateTimerBarColor()
 
-        turnTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
+        turnTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             self.timeRemaining -= 0.1
             self.updateTimerLabel()
             self.updateTimerBarColor()
 
             let fraction = max(0, self.timeRemaining / self.turnTimeLimit)
-            self.timerBarWidth.constant = (self.timerContainerWidth > 0 ? self.timerContainerWidth : (self.view.bounds.width - 48)) * CGFloat(fraction)
-            UIView.animate(withDuration: 0.1) { self.view.layoutIfNeeded() }
+            self.timerBarWidth.constant = self.timerContainerWidth * CGFloat(fraction)
+
+            UIView.animate(withDuration: 0.1) {
+                self.view.layoutIfNeeded()
+            }
 
             if self.timeRemaining <= 0 {
                 self.turnTimer?.invalidate()
@@ -258,6 +323,7 @@ class GameController: UIViewController {
 
     func updateTimerBarColor() {
         let fraction = timeRemaining / turnTimeLimit
+
         if fraction > 0.5 {
             timerBar.backgroundColor = .systemGreen
         } else if fraction > 0.25 {
@@ -282,10 +348,12 @@ class GameController: UIViewController {
         currentPlayer = currentPlayer == 1 ? 2 : 1
         statusLabel.text = "\(skippedName)'s turn skipped! ⏰"
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.updateStatusLabel()
-            self.updateArrowColors()
-            self.startTurnTimer()
+        updateStatusLabel()
+        updateArrowColors()
+        setButtonsEnabled(true)
+
+        if mode == .TPT {
+            startTurnTimer()
         }
     }
 
@@ -293,6 +361,7 @@ class GameController: UIViewController {
 
     @objc func columnTapped(_ sender: UIButton) {
         guard !isAnimating, !gameOver else { return }
+
         let col = sender.tag
         guard let targetRow = availableRow(in: col) else { return }
 
@@ -320,11 +389,13 @@ class GameController: UIViewController {
         let distance = finalY - startY
         let duration = Double(distance / 900) + 0.15
 
-        UIView.animate(withDuration: duration, delay: 0,
+        UIView.animate(withDuration: duration,
+                       delay: 0,
                        options: .curveEaseIn,
                        animations: {
             fallingPiece.frame.origin.y = finalY
         }) { _ in
+
             UIView.animate(withDuration: 0.06, animations: {
                 fallingPiece.transform = CGAffineTransform(scaleX: 1.15, y: 0.85)
             }) { _ in
@@ -333,37 +404,31 @@ class GameController: UIViewController {
                 }
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                fallingPiece.removeFromSuperview()
-                self.grid[targetRow][col] = player
-                self.cellViews[targetRow][col].backgroundColor = pieceColor
-                self.cellViews[targetRow][col].layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
+            fallingPiece.removeFromSuperview()
+            self.grid[targetRow][col] = player
+            self.cellViews[targetRow][col].backgroundColor = pieceColor
+            self.cellViews[targetRow][col].layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
+            self.isAnimating = false
 
-                self.isAnimating = false
+            if self.checkWin(player: player, row: targetRow, col: col) {
+                self.gameOver = true
+                self.highlightWinningPieces(player: player, row: targetRow, col: col)
+                self.statusLabel.text = "🎉 \(self.playerNames[player - 1]) wins!"
+                self.statusLabel.textColor = self.playerColors[player - 1]
+                self.showGameOver(winner: player)
+            } else if self.checkDraw() {
+                self.gameOver = true
+                self.statusLabel.text = "It's a draw!"
+                self.statusLabel.textColor = .white
+                self.showGameOver(winner: nil)
+            } else {
+                self.currentPlayer = (player == 1) ? 2 : 1
+                self.updateStatusLabel()
+                self.updateArrowColors()
+                self.setButtonsEnabled(true)
 
-                if self.checkWin(player: player, row: targetRow, col: col) {
-                    self.gameOver = true
-                    self.highlightWinningPieces(player: player, row: targetRow, col: col)
-                    self.statusLabel.text = "🎉 \(self.playerNames[player - 1]) wins!"
-                    self.statusLabel.textColor = self.playerColors[player - 1]
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                        self.showGameOver(winner: player)
-                    }
-                } else if self.checkDraw() {
-                    self.gameOver = true
-                    self.statusLabel.text = "It's a draw!"
-                    self.statusLabel.textColor = .white
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.showGameOver(winner: nil)
-                    }
-                } else {
-                    self.currentPlayer = player == 1 ? 2 : 1
-                    self.updateStatusLabel()
-                    self.updateArrowColors()
-                    self.setButtonsEnabled(true)
-                    if self.mode == .TPT {
-                        self.startTurnTimer()
-                    }
+                if self.mode == .TPT {
+                    self.startTurnTimer()
                 }
             }
         }
@@ -372,67 +437,112 @@ class GameController: UIViewController {
     // MARK: - Game Logic
 
     func availableRow(in col: Int) -> Int? {
-        for row in stride(from: rows - 1, through: 0, by: -1) {
-            if grid[row][col] == 0 { return row }
+        var row = rows - 1
+
+        while row >= 0 {
+            if grid[row][col] == 0 {
+                return row
+            }
+            row -= 1
         }
+
         return nil
     }
 
     func checkWin(player: Int, row: Int, col: Int) -> Bool {
-        return checkDir(player: player, row: row, col: col, dr: 0, dc: 1)
-            || checkDir(player: player, row: row, col: col, dr: 1, dc: 0)
-            || checkDir(player: player, row: row, col: col, dr: 1, dc: 1)
-            || checkDir(player: player, row: row, col: col, dr: 1, dc: -1)
+        return checkDir(player: player, row: row, col: col, dr: 0, dc: 1) ||
+               checkDir(player: player, row: row, col: col, dr: 1, dc: 0) ||
+               checkDir(player: player, row: row, col: col, dr: 1, dc: 1) ||
+               checkDir(player: player, row: row, col: col, dr: 1, dc: -1)
     }
 
     func checkDir(player: Int, row: Int, col: Int, dr: Int, dc: Int) -> Bool {
         var count = 1
-        var r = row + dr, c = col + dc
+
+        var r = row + dr
+        var c = col + dc
         while r >= 0 && r < rows && c >= 0 && c < cols && grid[r][c] == player {
-            count += 1; r += dr; c += dc
+            count += 1
+            r += dr
+            c += dc
         }
-        r = row - dr; c = col - dc
+
+        r = row - dr
+        c = col - dc
         while r >= 0 && r < rows && c >= 0 && c < cols && grid[r][c] == player {
-            count += 1; r -= dr; c -= dc
+            count += 1
+            r -= dr
+            c -= dc
         }
+
         return count >= 4
     }
 
     func checkDraw() -> Bool {
-        return grid[0].allSatisfy { $0 != 0 }
+        for cell in grid[0] {
+            if cell == 0 {
+                return false
+            }
+        }
+        return true
     }
 
     func winningCells(player: Int, row: Int, col: Int) -> [(Int, Int)] {
-        let directions = [(0,1),(1,0),(1,1),(1,-1)]
+        let directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
+
         for (dr, dc) in directions {
             var cells = [(row, col)]
-            var r = row + dr, c = col + dc
+
+            var r = row + dr
+            var c = col + dc
             while r >= 0 && r < rows && c >= 0 && c < cols && grid[r][c] == player {
-                cells.append((r, c)); r += dr; c += dc
+                cells.append((r, c))
+                r += dr
+                c += dc
             }
-            r = row - dr; c = col - dc
+
+            r = row - dr
+            c = col - dc
             while r >= 0 && r < rows && c >= 0 && c < cols && grid[r][c] == player {
-                cells.append((r, c)); r -= dr; c -= dc
+                cells.append((r, c))
+                r -= dr
+                c -= dc
             }
-            if cells.count >= 4 { return cells }
+
+            if cells.count >= 4 {
+                return cells
+            }
         }
+
         return []
     }
 
     func highlightWinningPieces(player: Int, row: Int, col: Int) {
         let cells = winningCells(player: player, row: row, col: col)
+
         for r in 0..<rows {
             for c in 0..<cols {
-                if grid[r][c] != 0 && !cells.contains(where: { $0.0 == r && $0.1 == c }) {
+                var isWinningCell = false
+
+                for cell in cells {
+                    if cell.0 == r && cell.1 == c {
+                        isWinningCell = true
+                        break
+                    }
+                }
+
+                if grid[r][c] != 0 && !isWinningCell {
                     UIView.animate(withDuration: 0.3) {
                         self.cellViews[r][c].alpha = 0.3
                     }
                 }
             }
         }
+
         for (r, c) in cells {
             let cell = cellViews[r][c]
-            UIView.animate(withDuration: 0.3, delay: 0,
+            UIView.animate(withDuration: 0.3,
+                           delay: 0,
                            options: [.autoreverse, .repeat, .allowUserInteraction],
                            animations: {
                 cell.transform = CGAffineTransform(scaleX: 1.12, y: 1.12)
@@ -451,12 +561,15 @@ class GameController: UIViewController {
 
     func updateArrowColors() {
         let color = playerColors[currentPlayer - 1]
-        columnButtons.forEach { $0.tintColor = color }
+        for button in columnButtons {
+            button.tintColor = color
+        }
     }
 
     func setButtonsEnabled(_ enabled: Bool) {
-        columnButtons.forEach { btn in
+        for btn in columnButtons {
             btn.isEnabled = enabled
+
             if enabled {
                 let full = availableRow(in: btn.tag) == nil
                 btn.isEnabled = !full
@@ -473,18 +586,27 @@ class GameController: UIViewController {
         turnTimer?.invalidate()
         setButtonsEnabled(false)
 
-        let title = winner != nil ? "\(playerNames[winner! - 1]) Wins! 🎉" : "Draw!"
-        let message = winner != nil
-            ? "\(playerNames[winner! - 1]) got four in a row!"
-            : "The board is full. No winner this time."
+        let title: String
+        let message: String
+
+        if let winner = winner {
+            title = "\(playerNames[winner - 1]) Wins! 🎉"
+            message = "\(playerNames[winner - 1]) got four in a row!"
+        } else {
+            title = "Draw!"
+            message = "The board is full. No winner this time."
+        }
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
         alert.addAction(UIAlertAction(title: "Play Again", style: .default) { _ in
             self.resetGame()
         })
+
         alert.addAction(UIAlertAction(title: "Main Menu", style: .cancel) { _ in
             self.dismiss(animated: true)
         })
+
         present(alert, animated: true)
     }
 
@@ -509,31 +631,28 @@ class GameController: UIViewController {
         setButtonsEnabled(true)
 
         if mode == .TPT {
-            DispatchQueue.main.async {
-                if let bar = self.timerBar.superview {
-                    self.timerContainerWidth = bar.bounds.width
-                    if self.timerContainerWidth == 0 {
-                        self.timerContainerWidth = self.view.bounds.width - 48
-                    }
-                }
-                self.startTurnTimer()
-            }
+            timerContainerWidth = view.bounds.width - 64
+            startTurnTimer()
         }
     }
 
     @objc func quitTapped() {
         turnTimer?.invalidate()
+
         let alert = UIAlertController(title: "Quit Game?",
                                       message: "Are you sure you want to quit?",
                                       preferredStyle: .alert)
+
         alert.addAction(UIAlertAction(title: "Yes, Quit", style: .destructive) { _ in
             self.dismiss(animated: true)
         })
+
         alert.addAction(UIAlertAction(title: "Keep Playing", style: .cancel) { _ in
             if self.mode == .TPT && !self.gameOver && !self.isAnimating {
                 self.startTurnTimer()
             }
         })
+
         present(alert, animated: true)
     }
 }
