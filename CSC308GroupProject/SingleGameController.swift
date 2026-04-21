@@ -12,17 +12,28 @@ class SingleGameController: UIViewController {
     // variable to change game mode
     var mode: Mode?
     
+    // outlets for collection view and turn label
     @IBOutlet weak var collView: UICollectionView!
     @IBOutlet weak var turnLabel: UILabel!
     
+    // variables to store # of wins for each player
     var oneScore = 0
     var twoScore = 0
     
+    // player names, default to one and two
+    static var oneName: String = "One"
+    static var twoName: String = "Two"
+    
+    // player colors, default to yellow and red
+    static var oneColor: UIColor = .yellow
+    static var twoColor: UIColor = .red
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        //
         resetBoard()
         setCellWidthHeight()
-        turnLabel.text = "Player One" // TODO: add name customization
+        turnLabel.text = SingleGameController.oneName
         collView.reloadData()
     }
     
@@ -62,11 +73,11 @@ extension SingleGameController: UICollectionViewDataSource {
                 updateBoardWithBoardItem(boardItem)
                 
                 if victoryAchieved() {
-                    if redTurn() {
+                    if oneTurn() {
                         oneScore += 1
                     }
                     
-                    if yellowTurn() {
+                    if twoTurn() {
                         twoScore += 1
                     }
                     
@@ -89,6 +100,7 @@ extension SingleGameController: UICollectionViewDataSource {
             [self] (_) in
             resetBoard()
             self.resetCells()
+            setTurn(turnLabel, Turn.One)
         })
         ac.addAction(action)
         self.present(ac, animated: true)

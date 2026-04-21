@@ -9,38 +9,43 @@ import Foundation
 import UIKit
 
 enum Turn {
-    case Red
-    case Yellow
+    case One
+    case Two
 }
 
-var currTurn = Turn.Yellow
+var currTurn = Turn.One
 
 func toggleTurn(_ turnName: UILabel) {
-    if yellowTurn() {
-        currTurn = Turn.Red
-        turnName.text = "Red"
+    if oneTurn() {
+        currTurn = Turn.Two
+        turnName.text = "\(SingleGameController.twoName)"
     } else {
-        currTurn = Turn.Yellow
-        turnName.text = "Yellow"
+        currTurn = Turn.One
+        turnName.text = "\(SingleGameController.oneName)"
     }
 }
 
-func yellowTurn() -> Bool {
-    return currTurn == Turn.Yellow
+func setTurn(_ turnName: UILabel, _ turn: Turn) {
+    currTurn = turn
+    turnName.text = (turn == Turn.One) ? "\(SingleGameController.oneName)" : "\(SingleGameController.twoName)"
 }
 
-func redTurn() -> Bool {
-    return currTurn == Turn.Red
+func oneTurn() -> Bool {
+    return currTurn == Turn.One
+}
+
+func twoTurn() -> Bool {
+    return currTurn == Turn.Two
 }
 
 func currTurnTile() -> Tile {
-    return yellowTurn() ? Tile.Yellow : Tile.Red
+    return oneTurn() ? Tile.One : Tile.Two
 }
 
 func currTurnColor() -> UIColor {
-    return yellowTurn() ? .yellow : .red
+    return oneTurn() ? SingleGameController.oneColor : SingleGameController.twoColor
 }
 
 func currTurnVictoryMessage() -> String {
-    return yellowTurn() ? "Yellow Wins!" : "Red Wins!"
+    return oneTurn() ? "\(SingleGameController.oneName) Wins!" : "\(SingleGameController.twoName) Wins!"
 }

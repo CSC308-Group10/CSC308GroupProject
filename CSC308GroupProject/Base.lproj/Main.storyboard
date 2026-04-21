@@ -48,7 +48,7 @@
                                     <fontDescription key="titleFontDescription" type="boldSystem" pointSize="28"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <segue destination="1fH-rf-TCZ" kind="show" id="lWq-vo-q6u"/>
+                                    <segue destination="1fH-rf-TCZ" kind="show" identifier="modeSegue" id="lWq-vo-q6u"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JMN-t4-8Yb">
@@ -219,6 +219,9 @@
                                             </attributedString>
                                             <color key="baseBackgroundColor" systemColor="systemGreenColor"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="mTA-yX-tjs" kind="unwind" unwindAction="unwindToHome:" id="DIt-b3-vYf"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemTealColor"/>
@@ -267,6 +270,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4ao-d9-JNC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="mTA-yX-tjs" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="708" y="792"/>
         </scene>

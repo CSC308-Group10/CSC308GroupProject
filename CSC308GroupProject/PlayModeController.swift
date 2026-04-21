@@ -11,6 +11,14 @@ class PlayModeController: UIViewController {
     
     var mode = Mode.SP
     
+    // player names, default to One and Two
+    var oneName: String = "One"
+    var twoName: String = "Two"
+    
+    // player colors, default to yellow and red
+    var oneColor: UIColor = .yellow
+    var twoColor: UIColor = .red
+    
     @IBAction func playButtonPressed(_ sender: Any) {
         switch mode {
         case .SP:
@@ -56,6 +64,11 @@ class PlayModeController: UIViewController {
                 return
             }
             dest.mode = mode
+        } else if segue.identifier == "singleSegue" {
+            SingleGameController.oneName = oneName
+            SingleGameController.twoName = twoName
+            SingleGameController.oneColor = oneColor
+            SingleGameController.twoColor = twoColor
         }
     }
 

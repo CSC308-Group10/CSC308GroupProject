@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     let gameTable = ["Play", "Themes", "Player Customization"]
     let theme = ["Dark", "Light", "Pastel", "Dark Pastel"]
     var names = ["Player 1", "Player 2"]
-    var colors = ["yellow", "red"]
+    var colors: [UIColor] = [.yellow, .red]
     
     var selectedMember = ""
     var selectedTopic = ""
@@ -21,6 +21,38 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    @IBAction func unwindToHome(_ sender: UIStoryboardSegue){
+        if let sourceVC = sender.source as? CustomizeViewController {
+            if let p1Name = sourceVC.player1NameField.text, !p1Name.isEmpty {
+                names[0] = p1Name
+            } else {
+                names[0] = "Player 1"
+            }
+            
+            let p1Color = sourceVC.p1Color
+            colors[0] = p1Color
+            if let p2Name = sourceVC.player2NameField.text, !p2Name.isEmpty {
+                names[1] = p2Name
+            } else {
+                names[1] = "Player 2"
+            }
+            let p2Color = sourceVC.p2Color
+            colors[1] = p2Color
+            debugPrint(names[0], names[1], colors[0], colors[1])
+        }
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "modeSegue" {
+            guard let dest = segue.destination as? PlayModeController else {
+                return
+            }
+            dest.oneName = names[0]
+            dest.twoName = names[1]
+            dest.oneColor = colors[0]
+            dest.twoColor = colors[1]
+        }
     }
 }
 
@@ -106,7 +138,7 @@ extension ViewController: UITableViewDataSource{
         case 1:
             return "Choose different themes"
         case 2:
-            return "Customize yuor players"
+            return "Customize your players"
         default:
             return nil
         }
