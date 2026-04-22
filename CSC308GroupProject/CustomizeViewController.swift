@@ -9,7 +9,8 @@ import UIKit
 
 class CustomizeViewController: UIViewController {
 
-    let colorOptions: [UIColor] = [.systemRed, .systemOrange, .systemYellow, .systemGreen, .systemBlue, .systemPurple, .systemBrown]
+    @IBOutlet weak var customView: UIView!
+    var colorOptions: [UIColor] = [.systemRed, .systemOrange, .systemYellow, .systemGreen, .systemBlue, .systemPurple, .systemBrown]
     
     @IBOutlet weak var player1NameField: UITextField!
     @IBOutlet weak var player1ColorButton: UIButton!
@@ -21,6 +22,10 @@ class CustomizeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        customView.backgroundColor = Colors.bgColor
+        colorOptions = Colors.chipOptions
+        p1Color = colorOptions[0]
+        p2Color = colorOptions[1]
         setupMenu(for: player1ColorButton)
         setupMenu(for: player2ColorButton)
         // Do any additional setup after loading the view.

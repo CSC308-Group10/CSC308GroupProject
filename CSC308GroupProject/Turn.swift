@@ -15,6 +15,8 @@ enum Turn {
 
 var currTurn = Turn.One
 
+var compTimer = 1000
+
 func toggleTurn(_ turnName: UILabel) {
     if oneTurn() {
         currTurn = Turn.Two
@@ -22,6 +24,19 @@ func toggleTurn(_ turnName: UILabel) {
     } else {
         currTurn = Turn.One
         turnName.text = "\(SingleGameController.oneName)"
+    }
+}
+
+func compTurn(_ turnName: UILabel, _ collView: UICollectionView, _ controller: SingleGameController) {
+    turnName.text = "\(SingleGameController.twoName)"
+    currTurn = Turn.Two
+    
+    collView.isUserInteractionEnabled = false
+    // makes thread sleep for 2 seconds
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        let selection = IndexPath.init(item: Int.random(in: 0...6), section: Int.random(in: 0...5))
+        controller.collectionView(collView, didSelectItemAt: selection)
+        collView.isUserInteractionEnabled = true
     }
 }
 

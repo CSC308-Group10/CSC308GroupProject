@@ -31,9 +31,13 @@ class SingleGameController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //
+        view.backgroundColor = Colors.bgColor
         resetBoard()
         setCellWidthHeight()
         turnLabel.text = SingleGameController.oneName
+        if(mode == Mode.SP) {
+            SingleGameController.twoName = "Computer"
+        }
         collView.reloadData()
     }
     
@@ -88,7 +92,13 @@ extension SingleGameController: UICollectionViewDataSource {
                     resultAlert("Draw")
                 }
                 
-                toggleTurn(turnLabel)
+                if(mode == Mode.SP && oneTurn()) {
+                    compTurn(turnLabel, collView, self)
+                } else if(mode == Mode.SP) {
+                    toggleTurn(turnLabel)
+                } else {
+                    toggleTurn(turnLabel)
+                }
             }
         }
     }

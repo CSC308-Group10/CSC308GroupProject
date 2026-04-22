@@ -53,6 +53,7 @@ class PlayModeController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = Colors.bgColor
         modeDescText.text = "Single Player\n\nIn single player mode, you play against Al the AI, trying to create a row, column, or diagonal of four chips before it can."
         
         // Do any additional setup after loading the view.
@@ -64,7 +65,15 @@ class PlayModeController: UIViewController {
                 return
             }
             dest.mode = mode
+            dest.playerNames[0] = oneName
+            dest.playerNames[1] = twoName
+            dest.playerColors[0] = oneColor
+            dest.playerColors[1] = twoColor
         } else if segue.identifier == "singleSegue" {
+            guard let dest = segue.destination as? SingleGameController else {
+                return
+            }
+            dest.mode = Mode.SP
             SingleGameController.oneName = oneName
             SingleGameController.twoName = twoName
             SingleGameController.oneColor = oneColor

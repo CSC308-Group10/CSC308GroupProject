@@ -23,6 +23,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        view.backgroundColor = Colors.bgColor
+    }
+    
     @IBAction func unwindToHome(_ sender: UIStoryboardSegue){
         if let sourceVC = sender.source as? CustomizeViewController {
             if let p1Name = sourceVC.player1NameField.text, !p1Name.isEmpty {
